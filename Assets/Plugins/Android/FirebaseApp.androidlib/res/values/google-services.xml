@@ -1,0 +1,11 @@
+<?xml version='1.0' encoding='utf-8'?>
+<resources tools:keep="@string/gcm_defaultSenderId,@string/google_storage_bucket,@string/project_id,@string/google_api_key,@string/google_crash_reporting_api_key,@string/google_app_id,@string/default_android_client_id,@string/default_web_client_id" xmlns:tools="http://schemas.android.com/tools">
+  <string name="gcm_defaultSenderId" translatable="false">791849891815</string>
+  <string name="google_storage_bucket" translatable="false">authtest-30b68.appspot.com</string>
+  <string name="project_id" translatable="false">authtest-30b68</string>
+  <string name="google_api_key" translatable="false">AIzaSyAyc2NfShGbU_sogVrb1jNiQ5-Ihc9Nuqk</string>
+  <string name="google_crash_reporting_api_key" translatable="false">AIzaSyAyc2NfShGbU_sogVrb1jNiQ5-Ihc9Nuqk</string>
+  <string name="google_app_id" translatable="false">1:791849891815:android:b6ac16601b328fea85af42</string>
+  <string name="default_android_client_id" translatable="false">791849891815-bsf3989bpcuh3cc9kkcdb23mfuq2q8pl.apps.googleusercontent.com</string>
+  <string name="default_web_client_id" translatable="false">791849891815-0opf58mdkucpo4n8n592uguqbtr24gfh.apps.googleusercontent.com</string>
+</resources>

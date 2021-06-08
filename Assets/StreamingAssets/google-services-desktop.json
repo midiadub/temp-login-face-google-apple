@@ -1,0 +1,54 @@
+{
+  "project_info": {
+    "project_number": "791849891815",
+    "project_id": "authtest-30b68",
+    "storage_bucket": "authtest-30b68.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:791849891815:android:b6ac16601b328fea85af42",
+        "android_client_info": {
+          "package_name": "com.midiadub.temploginfacegoogleapple"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "791849891815-bsf3989bpcuh3cc9kkcdb23mfuq2q8pl.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.midiadub.temploginfacegoogleapple",
+            "certificate_hash": "25cdf3f43d8e58bb3446648d67524e9945ef169b"
+          }
+        },
+        {
+          "client_id": "791849891815-0opf58mdkucpo4n8n592uguqbtr24gfh.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyAyc2NfShGbU_sogVrb1jNiQ5-Ihc9Nuqk"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "791849891815-0opf58mdkucpo4n8n592uguqbtr24gfh.apps.googleusercontent.com",
+              "client_type": 3
+            },
+            {
+              "client_id": "791849891815-2f455n0u3jugsl072j56d820vmdb8d55.apps.googleusercontent.com",
+              "client_type": 2,
+              "ios_info": {
+                "bundle_id": "com.midiadub.temp-login-face-google-apple"
+              }
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
