@@ -125,4 +125,10 @@ public class FirebaseHandler : MonoBehaviour
     {
         SignInFacebook();
     }
+
+    public void SignOut()
+    {
+        FB.LogOut();
+        FirebaseAuth.DefaultInstance.SignOut();
+    }
 }

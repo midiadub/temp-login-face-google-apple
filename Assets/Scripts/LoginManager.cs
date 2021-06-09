@@ -7,6 +7,7 @@ using UnityEngine.UI;
 public class LoginManager : MonoBehaviour
 {
     [SerializeField] private Button signInButton;
+    [SerializeField] private Button signOutButton;
 
     private void Awake()
     {
@@ -18,6 +19,7 @@ public class LoginManager : MonoBehaviour
         FirebaseHandler.SignInAction += FirebaseHandlerOnSignInAction;              //Chama o método pra exibir que o usuário foi logado após o Firebase confirmar
         
         signInButton.onClick.AddListener(OnSignInClick);                            //Adiciona o método OnSignInclick para executar ao tocar no botão de Sign In
+        signOutButton.onClick.AddListener(OnSignOutClick);                            //Adiciona o método OnSignInclick para executar ao tocar no botão de Sign In
     }
 
     private void FirebaseHandlerOnSignInAction(bool signedIn)
@@ -32,5 +34,10 @@ public class LoginManager : MonoBehaviour
     private void OnSignInClick()
     {
         FirebaseHandler.Instance.SignIn();                                         //Ao tocar no botão de Sign In é chamado o método SignIn do singleton do FirebaseHandler
+    }
+
+    private void OnSignOutClick()
+    {
+        FirebaseHandler.Instance.SignOut();
     }
 }
