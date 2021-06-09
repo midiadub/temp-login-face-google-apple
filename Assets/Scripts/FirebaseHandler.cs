@@ -10,7 +10,7 @@ using UnityEngine.Experimental.PlayerLoop;
 public class FirebaseHandler : MonoBehaviour
 {
     public static event Action<bool> SignInAction = delegate { };
-    public static event Action<object, EventArgs> AuthStateChanged = delegate { };
+    //public static event Action<object, EventArgs> AuthStateChanged = delegate { };
 
     private static FirebaseHandler instance = null;
 
@@ -27,7 +27,6 @@ public class FirebaseHandler : MonoBehaviour
         }
     }
 
-    public bool IsInitialized => IsInitialized;
     public FirebaseApp App => App;
     public FirebaseAuth Auth => auth;
 
@@ -42,7 +41,7 @@ public class FirebaseHandler : MonoBehaviour
         {
             app = FirebaseApp.DefaultInstance;
             auth = FirebaseAuth.DefaultInstance;
-            auth.StateChanged += AuthOnStateChanged;
+            //auth.StateChanged += AuthOnStateChanged;
             FB.Init(InitCallBack, OnHideUnity);
         }
         else
@@ -70,23 +69,23 @@ public class FirebaseHandler : MonoBehaviour
         if (isUnityShown) FB.ActivateApp();
     }
 
-    private static void AuthOnStateChanged(object sender, EventArgs e)
+/*  private static void AuthOnStateChanged(object sender, EventArgs e)
     {
         AuthOnStateChanged(sender, e);
-    }
+    }    */
 
     public void SignInFacebook()
     {
-        var perms = new List<string>() {"public_profile", "email"};
-        FB.LogInWithReadPermissions(perms, OnFacebookLoginResult);
+        var perms = new List<string>() {"public_profile", "email"};                             //Cria uma lista de permissões que o Facebook libera
+        FB.LogInWithReadPermissions(perms, OnFacebookLoginResult);                              //Executa comando do SDK para solicitar ao usuário acesso às informações declaradas em perms. Se o usuário já permitiu antes, o comando apenas verifica a confirmação
     }
 
     private void OnFacebookLoginResult(ILoginResult result)
     {
         if (FB.IsLoggedIn)
         {
-            var accessToken = AccessToken.CurrentAccessToken;
-            SignInFirebase(accessToken);
+            var accessToken = AccessToken.CurrentAccessToken;                                   //Solicita o AccessToken do usuário
+            SignInFirebase(accessToken);                                                        //Utiliza o Accesstoken recebido para solicitar ao banco informações únicas
         }
         else
         {
@@ -97,8 +96,8 @@ public class FirebaseHandler : MonoBehaviour
 
     private void SignInFirebase(AccessToken accessToken)
     {
-        var credential = FacebookAuthProvider.GetCredential(accessToken.TokenString);
-        auth.SignInWithCredentialAsync(credential).ContinueWith(task =>
+        var credential = FacebookAuthProvider.GetCredential(accessToken.TokenString);          //Preenche as credenciais do usuário utilizando o accessToken como referência
+        auth.SignInWithCredentialAsync(credential).ContinueWith(task =>          //Efetua o login no Firebase usando a credencial/acesstoken como referência
         {
             if (task.IsCanceled)
             {

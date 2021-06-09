@@ -24,7 +24,7 @@ MonoBehaviour:
   status: 1
   xfbml: 0
   frictionlessRequests: 1
-  androidKeystorePath: C:\Users\Desktop\Documents\Unity\Midiadub\temp-login-face-google-apple
+  androidKeystorePath: 
   iosURLSuffix: 
   appLinkSchemes:
   - list: []

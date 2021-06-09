@@ -6,52 +6,31 @@ using UnityEngine.UI;
 
 public class LoginManager : MonoBehaviour
 {
-    //[SerializeField] private Button playButton;
-    //[SerializeField] private Button menuButton;
     [SerializeField] private Button signInButton;
 
     private void Awake()
     {
-        FirebaseHandler.Instance.Initialized();
+        FirebaseHandler.Instance.Initialized();                                     //responsável por inicializar o singleton do FirebaseHandler
     }
 
     public async void Start()
     {
-        //Event Listeners
-        FirebaseHandler.SignInAction += FirebaseHandlerOnSignInAction;
+        FirebaseHandler.SignInAction += FirebaseHandlerOnSignInAction;              //Chama o método pra exibir que o usuário foi logado após o Firebase confirmar
         
-        //Button listeners
-        //playButton.onClick.AddListener(OnPlayClick);
-        //menuButton.onClick.AddListener(Restart);
-        signInButton.onClick.AddListener(OnSignInClick);
-
-        //ResetGame();
-        //await ShowSplash();
+        signInButton.onClick.AddListener(OnSignInClick);                            //Adiciona o método OnSignInclick para executar ao tocar no botão de Sign In
     }
 
     private void FirebaseHandlerOnSignInAction(bool signedIn)
     {
         if (signedIn)
         {
-            //TODO Handle sign in UI
+            //TODO Após login trocar o botão para SignOut
             Debug.Log("Signed in");
         }
     }
 
     private void OnSignInClick()
     {
-        FirebaseHandler.Instance.SignIn();
+        FirebaseHandler.Instance.SignIn();                                         //Ao tocar no botão de Sign In é chamado o método SignIn do singleton do FirebaseHandler
     }
-
-    private void OnPlayClick()
-    {
-        //
-    }
-
-    private void Restart()
-    {
-        //
-    }
-
-
 }
