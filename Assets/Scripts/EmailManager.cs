@@ -113,8 +113,8 @@ public class EmailManager : MonoBehaviour
             //Now get the result
             User = LoginTask.Result;
             Debug.LogFormat("User signed in successfully: {0} ({1})", User.DisplayName, User.Email);
-            warningLoginText.text = "";
-            confirmLoginText.text = "Logged In";
+            warningLoginText.text = User.UserId;
+            //confirmLoginText.text = "Logged In";
         }
     }
 
