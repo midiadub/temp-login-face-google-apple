@@ -2,11 +2,18 @@
 using System.Collections;
 using TwitterKit.Unity;
 using TMPro;
+using Firebase.Auth;
 
 public class TwitterDemo : MonoBehaviour
 {
 	public TextMeshProUGUI userId;
 	
+	private FirebaseAuth auth;
+	
+	void Awake()
+	{
+		auth = FirebaseAuth.DefaultInstance;
+	}
 	
 	void Start ()
 	{
@@ -17,11 +24,11 @@ public class TwitterDemo : MonoBehaviour
 		// To set API key navigate to tools->Twitter Kit
 		Twitter.Init ();
 		
-		Twitter.LogIn (LoginCompleteWithCompose, (ApiError error) => {
+		Twitter.LogIn (Teste, (ApiError error) => {
 			UnityEngine.Debug.Log (error.message);
 		});
 	}
-	
+	/*
 	public void LoginCompleteWithEmail (TwitterSession session) {
 		// To get the user's email address you must have "Request email addresses from users" enabled on https://apps.twitter.com/ (Permissions -> Additional Permissions)
 		UnityEngine.Debug.Log ("LoginCompleteWithEmail()");
@@ -44,10 +51,31 @@ public class TwitterDemo : MonoBehaviour
 		 );
 		
 		Teste( Twitter.Session );
-	}
+	}*/
 
 	public void Teste(TwitterSession session)
 	{
-		userId.text = session.userName + " " + session.userName + " " + session.authToken.secret + " " + session.authToken.token;
+		Firebase.Auth.Credential credential =
+		Firebase.Auth.TwitterAuthProvider.GetCredential(session.authToken.token, session.authToken.secret);
+		auth.SignInWithCredentialAsync(credential).ContinueWith(task =>
+		{
+			if (task.IsCanceled)
+			{
+				Debug.LogError("SignInWithCredentialAsync was canceled.");
+				return;
+			}
+			if (task.IsFaulted)
+			{
+				Debug.LogError("SignInWithCredentialAsync encountered an error: " + task.Exception);
+				return;
+			}
+
+			Firebase.Auth.FirebaseUser newUser = task.Result;
+			Debug.LogFormat("User signed in successfully: {0} ({1})",
+				newUser.DisplayName, newUser.UserId);
+		});
+
+		
+		userId.text = session.userName + " || " + session.userName + " || " + session.authToken.secret + " || " + session.authToken.token;
 	}
 }
