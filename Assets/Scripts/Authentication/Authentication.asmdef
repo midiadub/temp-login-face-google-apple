@@ -1,0 +1,15 @@
+{
+    "name": "Midiadub.Authentication",
+    "references": [
+        "GUID:465ab4b7185ded44c9d1653e4f9fa61c",
+        "GUID:396383ef26b11bc499860a5bc6ac9fca"
+    ],
+    "includePlatforms": [],
+    "excludePlatforms": [],
+    "allowUnsafeCode": false,
+    "overrideReferences": false,
+    "precompiledReferences": [],
+    "autoReferenced": true,
+    "defineConstraints": [],
+    "versionDefines": []
+}

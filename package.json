@@ -1,0 +1,14 @@
+{
+  "displayName": "Authentication",
+  "name": "midiadub.authentication",
+  "unity": "2018.3",
+  "version": "1.0.1",
+  "keywords": [
+    "Midiadub"
+  ],
+  "author": {
+    "name": "Midiadub",
+    "url": "https://www.midiadub.com/"
+  },
+  "description": ". . ."
+}

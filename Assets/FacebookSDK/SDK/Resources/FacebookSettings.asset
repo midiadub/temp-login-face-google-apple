@@ -14,11 +14,11 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   selectedAppIndex: 0
   clientTokens:
-  - 
+  - 60719393c01e1d287905b3752d065fb3
   appIds:
   - 812412523036928
   appLabels:
-  - App Name
+  - midiadublogintest
   cookie: 1
   logging: 1
   status: 1

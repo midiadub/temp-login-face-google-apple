@@ -1,7 +1,12 @@
 {
   "dependencies": {
+    "midiadub.analytics": "1.0.3",
+    "midiadub.analytics.firebase": "1.0.0",
+    "zenject": "8.0.1",
     "com.google.firebase.app": "6.16.1",
     "com.google.firebase.auth": "6.16.1",
+    "com.google.firebase.analytics": "6.16.1",
+    "com.google.firebase.messaging": "6.16.1",
     "com.unity.collab-proxy": "1.2.16",
     "com.unity.ext.nunit": "1.0.0",
     "com.unity.ide.rider": "1.1.0",
@@ -41,7 +46,8 @@
     "com.unity.modules.video": "1.0.0",
     "com.unity.modules.vr": "1.0.0",
     "com.unity.modules.wind": "1.0.0",
-    "com.unity.modules.xr": "1.0.0"
+    "com.unity.modules.xr": "1.0.0",
+    "newtonsoft.json" : "2.0.2"
   },
   "scopedRegistries": [
     {
@@ -49,7 +55,9 @@
       "url": "http://midiadub.servehttp.com:8090",
       "scopes": [
         "com.google",
-        "midiadub"
+        "midiadub",
+        "zenject",
+        "newtonsoft"
       ]
     }
   ]
