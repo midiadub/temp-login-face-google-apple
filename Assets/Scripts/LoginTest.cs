@@ -94,4 +94,12 @@ public class LoginTest : MonoBehaviour
             button.SetActive(false);
         }
     }
+    
+    public void EnableAllButtons()
+    {
+        foreach (GameObject button in buttons)
+        {
+            button.SetActive(true);
+        }
+    }
 }

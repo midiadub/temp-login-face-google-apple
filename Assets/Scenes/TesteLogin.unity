@@ -2700,7 +2700,14 @@ MonoBehaviour:
   emailCreate: {fileID: 607591282}
   passwordCreate: {fileID: 251128119}
   username: {fileID: 1614031596}
-  buttons: []
+  buttons:
+  - {fileID: 2097681603}
+  - {fileID: 1892663093}
+  - {fileID: 722410997}
+  - {fileID: 906914157}
+  - {fileID: 564004617}
+  - {fileID: 966253689}
+  - {fileID: 505206330}
 --- !u!81 &1433539958
 AudioListener:
   m_ObjectHideFlags: 0
@@ -3833,16 +3840,16 @@ MonoBehaviour:
   m_OnClick:
     m_PersistentCalls:
       m_Calls:
-      - m_Target: {fileID: 1892663093}
-        m_MethodName: SetActive
-        m_Mode: 6
+      - m_Target: {fileID: 1433539957}
+        m_MethodName: DisableAllButtons
+        m_Mode: 1
         m_Arguments:
           m_ObjectArgument: {fileID: 0}
           m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
           m_IntArgument: 0
           m_FloatArgument: 0
           m_StringArgument: 
-          m_BoolArgument: 0
+          m_BoolArgument: 1
         m_CallState: 2
       - m_Target: {fileID: 403204669}
         m_MethodName: SetActive
@@ -4218,9 +4225,9 @@ MonoBehaviour:
   m_OnClick:
     m_PersistentCalls:
       m_Calls:
-      - m_Target: {fileID: 2097681603}
-        m_MethodName: SetActive
-        m_Mode: 6
+      - m_Target: {fileID: 1433539957}
+        m_MethodName: DisableAllButtons
+        m_Mode: 1
         m_Arguments:
           m_ObjectArgument: {fileID: 0}
           m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
