@@ -1,5 +1,4 @@
 ﻿using UnityEngine;
-using System.Collections;
 using TwitterKit.Unity;
 using TMPro;
 using Firebase.Auth;

@@ -8,6 +8,7 @@ using Firebase.Auth;
 using Facebook.Unity;
 using Google;
 using Midiadub.Analytics;
+using TwitterKit.Unity;
 
 namespace Midiadub.Authentication
 {
@@ -345,7 +346,44 @@ namespace Midiadub.Authentication
 
         #region Twitter
 
-        
+        public void LoginTwitter()
+        {
+            Debug.Log ("startLogin()");
+            // To set API key navigate to tools->Twitter Kit
+            Twitter.Init ();
+		
+            Twitter.LogIn (SignInTwitterFirebase, (ApiError error) => {
+                UnityEngine.Debug.Log (error.message);
+            });
+        }
+
+        public void SignInTwitterFirebase(TwitterSession session)
+        {
+            Firebase.Auth.Credential credential =
+                Firebase.Auth.TwitterAuthProvider.GetCredential(session.authToken.token, session.authToken.secret);
+            auth.SignInWithCredentialAsync(credential).ContinueWith(task =>
+            {
+                if (task.IsCanceled)
+                {
+                    Debug.LogError("SignInWithCredentialAsync was canceled.");
+                    return;
+                }
+                if (task.IsFaulted)
+                {
+                    Debug.LogError("SignInWithCredentialAsync encountered an error: " + task.Exception);
+                    return;
+                }
+
+                Firebase.Auth.FirebaseUser newUser = task.Result;
+                Debug.LogFormat("User signed in successfully: {0} ({1})",
+                    newUser.DisplayName, newUser.UserId);
+            });
+
+
+            #if DEV_MODE
+            Debug.Log(session.userName + " || " + session.userName + " || " + session.authToken.secret + " || " + session.authToken.token);
+            #endif
+        }
 
         #endregion
 

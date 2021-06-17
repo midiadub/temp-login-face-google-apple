@@ -44,6 +44,11 @@ public class LoginTest : MonoBehaviour
         _auth.SignInFacebook();
     }
     
+    public void LoginTwitter()
+    {
+        _auth.LoginTwitter();
+    }
+    
     public void LoginEmail()
     {
         StartCoroutine(_auth.LoginWithEmail(emailLogin.text, passwordLogin.text));
