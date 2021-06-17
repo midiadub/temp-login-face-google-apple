@@ -25,6 +25,8 @@ public class LoginTest : MonoBehaviour
     //public InputField passwordConfirmation;
     public InputField username;
 
+    public GameObject[] buttons;
+
     private void Awake()
     {
         _firebaseAnalytics = new FirebaseAnalyticRepository();
@@ -84,5 +86,12 @@ public class LoginTest : MonoBehaviour
     {
         _auth.SignOut();
     }
-    
+
+    public void DisableAllButtons()
+    {
+        foreach (GameObject button in buttons)
+        {
+            button.SetActive(false);
+        }
+    }
 }
