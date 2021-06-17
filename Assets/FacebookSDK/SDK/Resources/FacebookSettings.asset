@@ -14,9 +14,9 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   selectedAppIndex: 0
   clientTokens:
-  - 60719393c01e1d287905b3752d065fb3
+  - 8c7a8954abfee9f61a0bdc7b1f6e59b3
   appIds:
-  - 812412523036928
+  - 155993346460512
   appLabels:
   - midiadublogintest
   cookie: 1

@@ -17,13 +17,15 @@ namespace Midiadub.Authentication
         //Firebase variables
         DependencyStatus dependencyStatus;
         FirebaseAuth auth;
-        FirebaseUser User;
+        FirebaseUser user;
         private FirebaseApp app;
         private readonly IAnalyticsRepository analytics;
         private readonly string webClientId;
         private bool isInitialized;
         public static event Action<bool> SignInAction = delegate { };
         private GoogleSignInConfiguration configuration;
+
+        public string currentUser;
 
         public LoginManager(IAnalyticsRepository analytics, string webClientId)
         {
@@ -97,9 +99,9 @@ namespace Midiadub.Authentication
             {
                 //User is now logged in
                 //Now get the result
-                User = LoginTask.Result;
+                user = LoginTask.Result;
 #if DEV_MODE
-            Debug.LogFormat("User signed in successfully: {0} ({1})", User.DisplayName, User.Email);
+            Debug.LogFormat("User signed in successfully: {0} ({1})", user.DisplayName, user.Email);
 #endif
             }
         }
@@ -126,15 +128,15 @@ namespace Midiadub.Authentication
                 }
                 else
                 {
-                    User = RegisterTask.Result;
+                    user = RegisterTask.Result;
 
-                    if (User != null)
+                    if (user != null)
                     {
                         //Create a user profile and set the username
                         UserProfile profile = new UserProfile {DisplayName = _username};
 
                         //Call the Firebase auth update user profile function passing the profile with the username
-                        var ProfileTask = User.UpdateUserProfileAsync(profile);
+                        var ProfileTask = user.UpdateUserProfileAsync(profile);
                         //Wait until the task completes
                         yield return new WaitUntil(predicate: () => ProfileTask.IsCompleted);
 
@@ -158,6 +160,9 @@ namespace Midiadub.Authentication
             app = FirebaseApp.DefaultInstance;
             auth = FirebaseAuth.DefaultInstance;
             //auth.StateChanged += AuthOnStateChanged;
+            #if DEV_MODE
+            Debug.Log("Iniciou Facebook");
+            #endif
             FB.Init(InitFacebookCallBack, OnFacebookPopup);
         }
         
@@ -190,7 +195,7 @@ namespace Midiadub.Authentication
                 FB.LogOut();
             
             var perms = new List<string>()
-                {"public_profile", "email"}; //Cria uma lista de permissões que o Facebook libera
+                {"email"}; //Cria uma lista de permissões que o Facebook libera
             FB.LogInWithReadPermissions(perms,
                 OnFacebookLoginResult); //Executa comando do SDK para solicitar ao usuário acesso às informações declaradas em perms. Se o usuário já permitiu antes, o comando apenas verifica a confirmação
         }
@@ -395,18 +400,42 @@ namespace Midiadub.Authentication
 
         #region Anonymous
 
-        
+        public void LoginAnon()
+        {
+            auth.SignInAnonymouslyAsync().ContinueWith(task => {
+                if (task.IsCanceled) {
+                    Debug.LogError("SignInAnonymouslyAsync was canceled.");
+                    return;
+                }
+                if (task.IsFaulted) {
+                    Debug.LogError("SignInAnonymouslyAsync encountered an error: " + task.Exception);
+                    return;
+                }
+
+                Firebase.Auth.FirebaseUser newUser = task.Result;
+                Debug.LogFormat("User signed in successfully: {0} ({1})",
+                    newUser.DisplayName, newUser.UserId);
+            });
+        }
 
         #endregion
 
         public void SignOut()
         {
-            FirebaseAuth.DefaultInstance.SignOut();
+            auth.SignOut();
         }
         
         public void OnDisconnect()
         {
             GoogleSignIn.DefaultInstance.Disconnect();
+        }
+
+        public void DisplayCurrentUser()
+        {
+            if (auth.CurrentUser != null)
+            {
+                currentUser = auth.CurrentUser.UserId;
+            }
         }
     }
 }

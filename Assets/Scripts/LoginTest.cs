@@ -5,10 +5,13 @@ using Midiadub.Authentication;
 using Newtonsoft.Json.Bson;
 using UnityEngine;
 using UnityEngine.UI;
+using TMPro;
 
 public class LoginTest : MonoBehaviour
 {
     public string webClientId;
+    public string currentUser;
+    public TextMeshProUGUI displayUser;
     private LoginManager _auth;
     private FirebaseAnalyticRepository _firebaseAnalytics;
 
@@ -34,6 +37,17 @@ public class LoginTest : MonoBehaviour
         
     }
 
+    private void Update()
+    {
+        _auth.DisplayCurrentUser();
+
+        if (_auth.currentUser != null)
+        {
+            currentUser = _auth.currentUser;
+            displayUser.text = currentUser;
+        }
+    }
+
     public void LoginGoogle()
     {
         _auth.OnGoogleSignIn();
@@ -49,6 +63,11 @@ public class LoginTest : MonoBehaviour
         _auth.LoginTwitter();
     }
     
+    public void LoginAnon()
+    {
+        _auth.LoginAnon();
+    }
+    
     public void LoginEmail()
     {
         StartCoroutine(_auth.LoginWithEmail(emailLogin.text, passwordLogin.text));
@@ -59,6 +78,11 @@ public class LoginTest : MonoBehaviour
     {
         StartCoroutine(_auth.RegisterWithEmail(emailCreate.text, passwordCreate.text, username.text));
         Debug.Log(emailCreate.text + " " + passwordCreate.text);
+    }
+
+    public void Logout()
+    {
+        _auth.SignOut();
     }
     
 }
