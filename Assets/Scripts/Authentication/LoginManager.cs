@@ -24,6 +24,11 @@ namespace Midiadub.Authentication
         private bool isInitialized;
         public static event Action<bool> SignInAction = delegate { };
         private GoogleSignInConfiguration configuration;
+        
+        //Sistema de eventos
+        public delegate void LogInAction();
+        public static event LogInAction SignedIn;
+        public static event LogInAction SignedOut;
 
         public string currentUser;
 
@@ -41,6 +46,10 @@ namespace Midiadub.Authentication
         {
             //Set the authentication instance object
             auth = FirebaseAuth.DefaultInstance;
+            
+            //Iniciando gerenciador de usuário Logado/Deslogado
+            auth.StateChanged += AuthStateChanged;
+            AuthStateChanged(this, null);
 
             //Inicializando Google
             configuration = new GoogleSignInConfiguration
@@ -94,6 +103,9 @@ namespace Midiadub.Authentication
                         message = "Account does not exist";
                         break;
                 }
+#if DEV_MODE
+                Debug.Log(message);
+#endif
             }
             else
             {
@@ -430,12 +442,32 @@ namespace Midiadub.Authentication
             GoogleSignIn.DefaultInstance.Disconnect();
         }
 
-        public void DisplayCurrentUser()
+        // Track state changes of the auth object.
+        void AuthStateChanged(object sender, System.EventArgs eventArgs)
         {
-            if (auth.CurrentUser != null)
+            if (auth.CurrentUser != user)
             {
-                currentUser = auth.CurrentUser.UserId;
+                bool signedIn = user != auth.CurrentUser && auth.CurrentUser != null;
+                if (!signedIn && user != null)
+                {
+                    Debug.Log("Signed out " + user.UserId);
+                    currentUser = "";
+                    SignedOut();
+                }
+                user = auth.CurrentUser;
+                if (signedIn)
+                {
+                    Debug.Log("Signed in " + user.UserId);
+                    currentUser = auth.CurrentUser.UserId;
+                    SignedIn();
+                }
             }
+        }
+        
+        void OnDestroy()
+        {
+            auth.StateChanged -= AuthStateChanged;
+            auth = null;
         }
     }
 }

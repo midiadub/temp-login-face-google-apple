@@ -227,7 +227,7 @@ public static class Builder
         PlayerSettings.Android.keyaliasPass = "resolume";
     }
 
-#if UNITY_EDITOR || UNITY_IOS
+#if UNITY_IOS
     [PostProcessBuild]
     public static void OnPostProcessBuild(BuildTarget buildTarget, string pathToBuildProject)
     {

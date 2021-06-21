@@ -25,7 +25,9 @@ public class LoginTest : MonoBehaviour
     //public InputField passwordConfirmation;
     public InputField username;
 
-    public GameObject[] buttons;
+    public GameObject[] mainButtons;
+    public GameObject[] emailButtons;
+    public GameObject logOutButton;
 
     private void Awake()
     {
@@ -38,16 +40,17 @@ public class LoginTest : MonoBehaviour
     {
         
     }
-
-    private void Update()
+    
+    void OnEnable()
     {
-        _auth.DisplayCurrentUser();
+        LoginManager.SignedIn += DisplayLogoutButton;
+        LoginManager.SignedOut += EnableMainButtons;
+    }
 
-        if (_auth.currentUser != null)
-        {
-            currentUser = _auth.currentUser;
-            displayUser.text = currentUser;
-        }
+    private void OnDisable()
+    {
+        LoginManager.SignedIn -= DisplayLogoutButton;
+        LoginManager.SignedOut -= EnableMainButtons;
     }
 
     public void LoginGoogle()
@@ -73,7 +76,7 @@ public class LoginTest : MonoBehaviour
     public void LoginEmail()
     {
         StartCoroutine(_auth.LoginWithEmail(emailLogin.text, passwordLogin.text));
-        Debug.Log(emailLogin.text + " " + passwordLogin.text);
+        //Debug.Log(emailLogin.text + " " + passwordLogin.text);
     }
 
     public void CadastroEmail()
@@ -87,19 +90,37 @@ public class LoginTest : MonoBehaviour
         _auth.SignOut();
     }
 
-    public void DisableAllButtons()
+    public void DisableMainButtons()
     {
-        foreach (GameObject button in buttons)
+        foreach (GameObject button in mainButtons)
         {
             button.SetActive(false);
         }
     }
     
-    public void EnableAllButtons()
+    public void DisableEmailButtons()
     {
-        foreach (GameObject button in buttons)
+        foreach (GameObject button in emailButtons)
+        {
+            button.SetActive(false);
+        }
+    }
+    
+    public void EnableMainButtons()
+    {
+        foreach (GameObject button in mainButtons)
         {
             button.SetActive(true);
         }
+        displayUser.text = "";
+        logOutButton.SetActive(false);
+    }
+
+    public void DisplayLogoutButton()
+    {
+        DisableMainButtons();
+        DisableEmailButtons();
+        displayUser.text = _auth.currentUser;
+        logOutButton.SetActive(true);
     }
 }
