@@ -28,29 +28,34 @@ public class LoginTest : MonoBehaviour
     public GameObject[] mainButtons;
     public GameObject[] emailButtons;
     public GameObject logOutButton;
+    public GameObject appleButton;
+    public GameObject twitterPopUp;
 
     private void Awake()
     {
         _firebaseAnalytics = new FirebaseAnalyticRepository();
         _firebaseAnalytics.SetAuthorization(AppTrackingTransparency.AuthorizationStatus.AUTHORIZED);
         _auth = new LoginManager(_firebaseAnalytics, webClientId);
+        DisableAppleLogin();
     }
 
     void Start()
     {
-        
+
     }
     
     void OnEnable()
     {
         LoginManager.SignedIn += DisplayLogoutButton;
         LoginManager.SignedOut += EnableMainButtons;
+        LoginManager.TwitterError += DisplayTwitterError;
     }
 
     private void OnDisable()
     {
         LoginManager.SignedIn -= DisplayLogoutButton;
         LoginManager.SignedOut -= EnableMainButtons;
+        LoginManager.TwitterError -= DisplayTwitterError;
     }
 
     public void LoginGoogle()
@@ -96,6 +101,8 @@ public class LoginTest : MonoBehaviour
         {
             button.SetActive(false);
         }
+
+        DisableAppleLogin();
     }
     
     public void DisableEmailButtons()
@@ -116,11 +123,23 @@ public class LoginTest : MonoBehaviour
         logOutButton.SetActive(false);
     }
 
+    public void DisplayTwitterError()
+    {
+        twitterPopUp.SetActive(true);
+    }
+
     public void DisplayLogoutButton()
     {
         DisableMainButtons();
         DisableEmailButtons();
         displayUser.text = _auth.currentUser;
         logOutButton.SetActive(true);
+    }
+
+    void DisableAppleLogin()
+    {
+        #if UNITY_ANDROID
+        appleButton.SetActive(false);
+        #endif
     }
 }

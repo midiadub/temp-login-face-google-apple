@@ -29,6 +29,7 @@ namespace Midiadub.Authentication
         public delegate void LogInAction();
         public static event LogInAction SignedIn;
         public static event LogInAction SignedOut;
+        public static event LogInAction TwitterError;
 
         public string currentUser;
 
@@ -370,7 +371,7 @@ namespace Midiadub.Authentication
             Twitter.Init ();
 		
             Twitter.LogIn (SignInTwitterFirebase, (ApiError error) => {
-                UnityEngine.Debug.Log (error.message);
+                TwitterError();
             });
         }
 
@@ -382,12 +383,12 @@ namespace Midiadub.Authentication
             {
                 if (task.IsCanceled)
                 {
-                    Debug.LogError("SignInWithCredentialAsync was canceled.");
+                    Debug.Log("SignInWithCredentialAsync was canceled.");
                     return;
                 }
                 if (task.IsFaulted)
                 {
-                    Debug.LogError("SignInWithCredentialAsync encountered an error: " + task.Exception);
+                    Debug.Log("SignInWithCredentialAsync encountered an error: " + task.Exception);
                     return;
                 }
 
