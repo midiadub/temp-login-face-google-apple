@@ -1,6 +1,8 @@
 ﻿using System;
 using System.Collections;
 using System.Collections.Generic;
+using System.Security.Cryptography;
+using System.Text;
 using System.Threading.Tasks;
 using UnityEngine;
 using Firebase;
@@ -9,6 +11,12 @@ using Facebook.Unity;
 using Google;
 using Midiadub.Analytics;
 using TwitterKit.Unity;
+using AppleAuth;
+using AppleAuth.Enums;
+using AppleAuth.Extensions;
+using AppleAuth.Interfaces;
+using AppleAuth.Native;
+using Firebase.Extensions;
 
 namespace Midiadub.Authentication
 {
@@ -25,12 +33,31 @@ namespace Midiadub.Authentication
         public static event Action<bool> SignInAction = delegate { };
         private GoogleSignInConfiguration configuration;
         
-        //Sistema de eventos
+        private IAppleAuthManager appleAuthManager;
+        
+        //Sistema de eventos para erros
+        public enum LoginReturn
+        {
+            none,
+            twitter,
+            facebook,
+            emailLogin,
+            emailCadastro,
+            gmail,
+            anom,
+            apple
+        }
+        public LoginReturn typeMessage;
+        
+        public delegate void ErrorAction(LoginReturn _typeMessage);
+        public static event ErrorAction LoginError;
+        
+        //Sistema de eventos para Login/Logout
         public delegate void LogInAction();
         public static event LogInAction SignedIn;
         public static event LogInAction SignedOut;
-        public static event LogInAction TwitterError;
-
+        
+        //
         public string currentUser;
 
         public LoginManager(IAnalyticsRepository analytics, string webClientId)
@@ -63,6 +90,7 @@ namespace Midiadub.Authentication
             Debug.Log("Iniciou Google");
             #endif
 
+            InitializeApple();
             InitializeFacebook();
         }
 
@@ -371,7 +399,7 @@ namespace Midiadub.Authentication
             Twitter.Init ();
 		
             Twitter.LogIn (SignInTwitterFirebase, (ApiError error) => {
-                TwitterError();
+                LoginError(typeMessage = LoginReturn.twitter);
             });
         }
 
@@ -383,18 +411,24 @@ namespace Midiadub.Authentication
             {
                 if (task.IsCanceled)
                 {
+                    #if DEV_MODE
                     Debug.Log("SignInWithCredentialAsync was canceled.");
+                    #endif
                     return;
                 }
                 if (task.IsFaulted)
                 {
+                    #if DEV_MODE
                     Debug.Log("SignInWithCredentialAsync encountered an error: " + task.Exception);
+                    #endif
                     return;
                 }
 
                 Firebase.Auth.FirebaseUser newUser = task.Result;
+                #if DEV_MODE
                 Debug.LogFormat("User signed in successfully: {0} ({1})",
                     newUser.DisplayName, newUser.UserId);
+                #endif
             });
 
 
@@ -407,7 +441,229 @@ namespace Midiadub.Authentication
 
         #region Apple
 
+        private void InitializeApple()
+        {
+            if (AppleAuthManager.IsCurrentPlatformSupported)
+            {
+                // Creates a default JSON deserializer, to transform JSON Native responses to C# instances
+                var deserializer = new PayloadDeserializer();
+                // Creates an Apple Authentication manager with the deserializer
+                this.appleAuthManager = new AppleAuthManager(deserializer);    
+            }
+        }
+
+        public void SignInWithApple()
+        {
+            var loginArgs = new AppleAuthLoginArgs(LoginOptions.IncludeEmail | LoginOptions.IncludeFullName);
+
+            this.appleAuthManager.LoginWithAppleId(
+                loginArgs,
+                credential =>
+                {
+                    // Obtained credential, cast it to IAppleIDCredential
+                    var appleIdCredential = credential as IAppleIDCredential;
+                    if (appleIdCredential != null)
+                    {
+                        // Apple User ID
+                        // You should save the user ID somewhere in the device
+                        var userId = appleIdCredential.User;
+                        //PlayerPrefs.SetString(AppleUserIdKey, userId);
+
+                        // Email (Received ONLY in the first login)
+                        var email = appleIdCredential.Email;
+
+                        // Full name (Received ONLY in the first login)
+                        var fullName = appleIdCredential.FullName;
+
+                        // Identity token
+                        var identityToken = Encoding.UTF8.GetString(
+                            appleIdCredential.IdentityToken,
+                            0,
+                            appleIdCredential.IdentityToken.Length);
+
+                        // Authorization code
+                        var authorizationCode = Encoding.UTF8.GetString(
+                            appleIdCredential.AuthorizationCode,
+                            0,
+                            appleIdCredential.AuthorizationCode.Length);
+
+                        // And now you have all the information to create/login a user in your system
+                    }
+                },
+                error =>
+                {
+                    // Something went wrong
+                    var authorizationErrorCode = error.GetAuthorizationErrorCode();
+                });
+            
+//            PerformLoginWithAppleIdAndFirebase();
+        }
+
+        public void CheckCredentialRevoke()
+        {
+            this.appleAuthManager.SetCredentialsRevokedCallback(result =>
+            {
+                // Sign in with Apple Credentials were revoked.
+                // Discard credentials/user id and go to login screen.
+            });
+        }
+
+        public void CreatingNonce()
+        {
+            // Your custom Nonce string
+            var yourCustomNonce = "RANDOM_NONCE_FORTHEAUTHORIZATIONREQUEST";
+            var yourCustomState = "RANDOM_STATE_FORTHEAUTHORIZATIONREQUEST";
+
+// Arguments for a normal Sign In With Apple Request
+            var loginArgs = new AppleAuthLoginArgs(
+                LoginOptions.IncludeEmail | LoginOptions.IncludeFullName,
+                yourCustomNonce,
+                yourCustomState);
+
+// Arguments for a Quick Login
+            var quickLoginArgs = new AppleAuthQuickLoginArgs(yourCustomNonce, yourCustomState);
+        }
         
+        private static string GenerateRandomString(int length)
+        {
+            if (length <= 0)
+            {
+                throw new Exception("Expected nonce to have positive length");
+            }
+
+            const string charset = "0123456789ABCDEFGHIJKLMNOPQRSTUVXYZabcdefghijklmnopqrstuvwxyz-._";
+            var cryptographicallySecureRandomNumberGenerator = new RNGCryptoServiceProvider();
+            var result = string.Empty;
+            var remainingLength = length;
+
+            var randomNumberHolder = new byte[1];
+            while (remainingLength > 0)
+            {
+                var randomNumbers = new List<int>(16);
+                for (var randomNumberCount = 0; randomNumberCount < 16; randomNumberCount++)
+                {
+                    cryptographicallySecureRandomNumberGenerator.GetBytes(randomNumberHolder);
+                    randomNumbers.Add(randomNumberHolder[0]);
+                }
+
+                for (var randomNumberIndex = 0; randomNumberIndex < randomNumbers.Count; randomNumberIndex++)
+                {
+                    if (remainingLength == 0)
+                    {
+                        break;
+                    }
+
+                    var randomNumber = randomNumbers[randomNumberIndex];
+                    if (randomNumber < charset.Length)
+                    {
+                        result += charset[randomNumber];
+                        remainingLength--;
+                    }
+                }
+            }
+
+            return result;
+        }
+        
+        private static string GenerateSHA256NonceFromRawNonce(string rawNonce)
+        {
+            var sha = new SHA256Managed();
+            var utf8RawNonce = Encoding.UTF8.GetBytes(rawNonce);
+            var hash = sha.ComputeHash(utf8RawNonce);
+
+            var result = string.Empty;
+            for (var i = 0; i < hash.Length; i++)
+            {
+                result += hash[i].ToString("x2");
+            }
+
+            return result;
+        }
+        
+        public void PerformLoginWithAppleIdAndFirebase(Action<FirebaseUser> firebaseAuthCallback)
+        {
+            var rawNonce = GenerateRandomString(32);
+            var nonce = GenerateSHA256NonceFromRawNonce(rawNonce);
+
+            var loginArgs = new AppleAuthLoginArgs(
+                LoginOptions.IncludeEmail | LoginOptions.IncludeFullName,
+                nonce);
+
+            this.appleAuthManager.LoginWithAppleId(
+                loginArgs,
+                credential =>
+                {
+                    var appleIdCredential = credential as IAppleIDCredential;
+                    if (appleIdCredential != null)
+                    {
+                        this.PerformFirebaseAuthentication(appleIdCredential, rawNonce, firebaseAuthCallback);
+                    }
+                },
+                error =>
+                {
+                    // Something went wrong
+                });
+        }
+        
+        public void PerformQuickLoginWithFirebase(Action<FirebaseUser> firebaseAuthCallback)
+        {
+            var rawNonce = GenerateRandomString(32);
+            var nonce = GenerateSHA256NonceFromRawNonce(rawNonce);
+
+            var quickLoginArgs = new AppleAuthQuickLoginArgs(nonce);
+
+            this.appleAuthManager.QuickLogin(
+                quickLoginArgs,
+                credential =>
+                {
+                    var appleIdCredential = credential as IAppleIDCredential;
+                    if (appleIdCredential != null)
+                    {
+                        this.PerformFirebaseAuthentication(appleIdCredential, rawNonce, firebaseAuthCallback);
+                    }
+                },
+                error =>
+                {
+                    // Something went wrong
+                });
+        }
+        
+        private void PerformFirebaseAuthentication(
+            IAppleIDCredential appleIdCredential,
+            string rawNonce,
+            Action<FirebaseUser> firebaseAuthCallback)
+        {
+            var identityToken = Encoding.UTF8.GetString(appleIdCredential.IdentityToken);
+            var authorizationCode = Encoding.UTF8.GetString(appleIdCredential.AuthorizationCode);
+            var firebaseCredential = OAuthProvider.GetCredential(
+                "apple.com",
+                identityToken,
+                rawNonce,
+                authorizationCode);
+
+            auth.SignInWithCredentialAsync(firebaseCredential)
+                .ContinueWithOnMainThread(task => HandleSignInWithUser(task, firebaseAuthCallback));
+        }
+
+        private static void HandleSignInWithUser(Task<FirebaseUser> task, Action<FirebaseUser> firebaseUserCallback)
+        {
+            if (task.IsCanceled)
+            {
+                Debug.Log("Firebase auth was canceled");
+                firebaseUserCallback(null);
+            }
+            else if (task.IsFaulted)
+            {
+                Debug.Log("Firebase auth failed");
+                firebaseUserCallback(null);
+            }
+            else
+            {
+                var firebaseUser = task.Result;
+                Debug.Log("Firebase auth completed | User ID:" + firebaseUser.UserId);
+                firebaseUserCallback(firebaseUser);
+            }
+        }
 
         #endregion
 

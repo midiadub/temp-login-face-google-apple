@@ -29,7 +29,7 @@ public class LoginTest : MonoBehaviour
     public GameObject[] emailButtons;
     public GameObject logOutButton;
     public GameObject appleButton;
-    public GameObject twitterPopUp;
+    public GameObject errorPopUp;
 
     private void Awake()
     {
@@ -48,14 +48,14 @@ public class LoginTest : MonoBehaviour
     {
         LoginManager.SignedIn += DisplayLogoutButton;
         LoginManager.SignedOut += EnableMainButtons;
-        LoginManager.TwitterError += DisplayTwitterError;
+        LoginManager.LoginError += DisplayError;
     }
 
     private void OnDisable()
     {
         LoginManager.SignedIn -= DisplayLogoutButton;
         LoginManager.SignedOut -= EnableMainButtons;
-        LoginManager.TwitterError -= DisplayTwitterError;
+        LoginManager.LoginError -= DisplayError;
     }
 
     public void LoginGoogle()
@@ -71,6 +71,11 @@ public class LoginTest : MonoBehaviour
     public void LoginTwitter()
     {
         _auth.LoginTwitter();
+    }
+    
+    public void LoginApple()
+    {
+        _auth.SignInWithApple();
     }
     
     public void LoginAnon()
@@ -101,8 +106,6 @@ public class LoginTest : MonoBehaviour
         {
             button.SetActive(false);
         }
-
-        DisableAppleLogin();
     }
     
     public void DisableEmailButtons()
@@ -121,11 +124,17 @@ public class LoginTest : MonoBehaviour
         }
         displayUser.text = "";
         logOutButton.SetActive(false);
+        DisableAppleLogin();
     }
 
-    public void DisplayTwitterError()
+    public void DisplayError(LoginManager.LoginReturn _loginReturn)
     {
-        twitterPopUp.SetActive(true);
+        switch (_loginReturn)
+        {
+            case LoginManager.LoginReturn.twitter:
+                errorPopUp.SetActive(true);
+                break;
+        }
     }
 
     public void DisplayLogoutButton()

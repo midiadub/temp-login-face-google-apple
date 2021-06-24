@@ -363,7 +363,7 @@ GameObject:
   - component: {fileID: 81109566}
   - component: {fileID: 81109565}
   m_Layer: 5
-  m_Name: TwitterError
+  m_Name: ErrorPopUp
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -3031,7 +3031,7 @@ GameObject:
   - component: {fileID: 1328261525}
   - component: {fileID: 1328261524}
   m_Layer: 5
-  m_Name: Text (TMP)
+  m_Name: Header
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -3304,7 +3304,7 @@ MonoBehaviour:
   - {fileID: 403204669}
   logOutButton: {fileID: 293871986}
   appleButton: {fileID: 966253689}
-  twitterPopUp: {fileID: 81109563}
+  errorPopUp: {fileID: 81109563}
 --- !u!81 &1433539958
 AudioListener:
   m_ObjectHideFlags: 0
